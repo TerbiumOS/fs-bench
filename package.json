@@ -1,5 +1,5 @@
 {
-  "name": "fs-bench",
+  "name": "@terbiumos/fs-bench",
   "version": "1.0.0",
   "description": "A benchmarking tool for benchmarking web file system implementations",
   "keywords": [
