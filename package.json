@@ -1,0 +1,45 @@
+{
+  "name": "fs-bench",
+  "version": "1.0.0",
+  "description": "A benchmarking tool for benchmarking web file system implementations",
+  "keywords": [
+    "benchmark",
+    "file-system"
+  ],
+  "homepage": "https://github.com/TerbiumOS/fs-bench#readme",
+  "bugs": {
+    "url": "https://github.com/TerbiumOS/fs-bench/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TerbiumOS/fs-bench.git"
+  },
+  "license": "Apache-2.0",
+  "author": "TerbiumOS Development",
+  "type": "module",
+  "bin": {
+    "fs-bench": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "bench": "tsx src/cli.ts",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@isomorphic-git/lightning-fs": "^4.6.2",
+    "@terbiumos/tfs": "^1.0.24",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.15.34",
+    "express": "^5.2.1",
+    "fake-indexeddb": "^6.0.1",
+    "filer": "^1.4.1",
+    "puppeteer": "^25.1.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  }
+}
