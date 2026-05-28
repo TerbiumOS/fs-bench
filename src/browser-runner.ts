@@ -258,10 +258,9 @@ export async function runBrowserBenchmarks(
             backendName: BackendName,
             benchmarkCase: BenchmarkCase,
             repetitionIndex: number,
+            payload: Uint8Array,
+            paths: string[],
           ): Promise<CaseOutcome> => {
-            const payload = createPayload(`${backendName}:${benchmarkCase.label}:${repetitionIndex}`, benchmarkCase.fileSizeBytes);
-            const paths = createFixturePaths(backendName, benchmarkCase, repetitionIndex);
-            
             // Normalize the fs object to find promises
             let promisesApi = fsRaw?.promises;
             if (backendName === 'tfs' && fsRaw?.fs?.promises) {
@@ -272,22 +271,23 @@ export async function runBrowserBenchmarks(
 
             const writeFile = promisesApi?.writeFile;
             const readFile = promisesApi?.readFile;
+            let start = 0;
 
-            if (benchmarkCase.kind === 'read') {
-              if (!writeFile || !readFile) {
+            try {
+              if (benchmarkCase.kind === 'read') {
+                if (!writeFile || !readFile) {
+                  return { status: 'na' };
+                }
+
+                for (const path of paths) {
+                  await writeFile(path, payload);
+                }
+              } else if (!writeFile) {
                 return { status: 'na' };
               }
 
-              for (const path of paths) {
-                await writeFile(path, payload);
-              }
-            } else if (!writeFile) {
-              return { status: 'na' };
-            }
+              start = performance.now();
 
-            const start = performance.now();
-
-            try {
               if (benchmarkCase.kind === 'write') {
                 for (const path of paths) {
                   await writeFile(path, payload);
@@ -324,9 +324,22 @@ export async function runBrowserBenchmarks(
             repetitionsCount: number,
           ): Promise<CaseOutcome> => {
             const samples: number[] = [];
+            let payload: Uint8Array;
+            let paths: string[];
+
+            try {
+              payload = createPayload(`${backendName}:${benchmarkCase.label}`, benchmarkCase.fileSizeBytes);
+              paths = createFixturePaths(backendName, benchmarkCase, 0);
+            } catch (error) {
+              const message = error instanceof Error ? error.message : String(error);
+
+              throw new Error(
+                `Failed to prepare ${backendName} ${benchmarkCase.label} (${benchmarkCase.fileSizeBytes} bytes): ${message}`,
+              );
+            }
 
             for (let repetitionIndex = 0; repetitionIndex < repetitionsCount; repetitionIndex += 1) {
-              const result = await measureOnce(fs, backendName, benchmarkCase, repetitionIndex);
+              const result = await measureOnce(fs, backendName, benchmarkCase, repetitionIndex, payload, paths);
 
               if (result.status !== 'ok' || typeof result.mbPerSec !== 'number') {
                 return result;
