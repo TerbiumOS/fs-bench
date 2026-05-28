@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@isomorphic-git/lightning-fs": "^4.6.2",
-    "@terbiumos/tfs": "^1.0.24",
+    "@terbiumos/tfs": "^1.1.0-dev.1",
     "@types/express": "^5.0.6",
     "@types/node": "^22.15.34",
     "express": "^5.2.1",
